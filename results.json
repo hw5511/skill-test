@@ -2,5 +2,28 @@
   "title": "Skill Test - AI Agent Skill Effectiveness Research",
   "updated": "2026-04-10",
   "model": "sonnet",
-  "prompts": []
+  "prompts": [
+    {
+      "id": "P1-landing-page",
+      "title": "AI Agent Workshop Landing Page",
+      "experiments": {
+        "A-control": {
+          "status": "done",
+          "files": ["index.html"]
+        },
+        "B-skill-basic": {
+          "status": "done",
+          "files": ["index.html"]
+        },
+        "C-skill-rules": {
+          "status": "done",
+          "files": ["index.html"]
+        },
+        "D-skill-full": {
+          "status": "done",
+          "files": ["index.html"]
+        }
+      }
+    }
+  ]
 }

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 에이전트 워크샵</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0d0d0d;
+      --bg-card: #1a1a1a;
+      --bg-card-hover: #222222;
+      --border: #2a2a2a;
+      --accent: #6c63ff;
+      --accent-light: #8b84ff;
+      --accent-dim: rgba(108, 99, 255, 0.15);
+      --text: #f0f0f0;
+      --text-muted: #888;
+      --text-sub: #bbb;
+      --radius: 12px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 80px 24px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(108,99,255,0.18) 0%, transparent 70%),
+                  var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236c63ff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--accent-dim);
+      border: 1px solid rgba(108,99,255,0.4);
+      color: var(--accent-light);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span {
+      color: var(--accent-light);
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--text-sub);
+      max-width: 540px;
+      margin-bottom: 40px;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-light);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-sub);
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 14px 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent-light);
+    }
+
+    .hero-meta {
+      margin-top: 56px;
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent-light);
+    }
+
+    .hero-stat span {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ── SECTION COMMON ── */
+    section {
+      padding: 100px 24px;
+    }
+
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-light);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .section-desc {
+      font-size: 1rem;
+      color: var(--text-sub);
+      max-width: 560px;
+      margin-bottom: 56px;
+    }
+
+    /* ── LEARN ── */
+    #learn {
+      background: #111;
+    }
+
+    .learn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .learn-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .learn-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+    }
+
+    .learn-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--accent-dim);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+    }
+
+    .learn-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .learn-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── SCHEDULE ── */
+    #schedule {
+      background: var(--bg);
+    }
+
+    .schedule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .schedule-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 24px;
+      align-items: start;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 28px;
+      transition: border-color 0.2s;
+    }
+
+    .schedule-item:hover {
+      border-color: var(--accent);
+    }
+
+    .schedule-week {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-light);
+      padding-top: 2px;
+    }
+
+    .schedule-content h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .schedule-content p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .schedule-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent-light);
+      background: var(--accent-dim);
+      border-radius: 100px;
+      padding: 3px 10px;
+    }
+
+    /* ── INSTRUCTOR ── */
+    #instructor {
+      background: #111;
+    }
+
+    .instructor-card {
+      display: flex;
+      gap: 48px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .instructor-avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, #a78bfa 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      flex-shrink: 0;
+    }
+
+    .instructor-info h3 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .instructor-title {
+      font-size: 0.9rem;
+      color: var(--accent-light);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .instructor-info p {
+      font-size: 0.95rem;
+      color: var(--text-sub);
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .instructor-badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .instructor-badge {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 12px;
+    }
+
+    /* ── CTA ── */
+    #cta {
+      background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(108,99,255,0.2) 0%, transparent 70%),
+                  var(--bg);
+      text-align: center;
+    }
+
+    #cta .section-title {
+      margin-bottom: 16px;
+    }
+
+    #cta .section-desc {
+      margin: 0 auto 40px;
+    }
+
+    .cta-price {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: var(--accent-light);
+      margin-bottom: 8px;
+    }
+
+    .cta-price-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      section {
+        padding: 72px 20px;
+      }
+
+      .schedule-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 20px;
+      }
+
+      .instructor-card {
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      .hero-meta {
+        gap: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-badge">2026 Spring Cohort</div>
+    <h1>AI 에이전트<br><span>워크샵</span></h1>
+    <p>스스로 생각하고 행동하는 AI를 직접 설계하고 배포까지. 4주 완성 실전 과정.</p>
+    <div class="hero-cta">
+      <a href="#cta" class="btn-primary">수강 신청하기</a>
+      <a href="#learn" class="btn-secondary">커리큘럼 보기</a>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-stat">
+        <strong>4주</strong>
+        <span>집중 과정</span>
+      </div>
+      <div class="hero-stat">
+        <strong>20명</strong>
+        <span>소수 정원</span>
+      </div>
+      <div class="hero-stat">
+        <strong>100%</strong>
+        <span>실습 중심</span>
+      </div>
+      <div class="hero-stat">
+        <strong>온라인</strong>
+        <span>실시간 강의</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT YOU'LL LEARN -->
+  <section id="learn">
+    <div class="container">
+      <div class="section-label">What You'll Learn</div>
+      <h2 class="section-title">이 과정에서 배우는 것</h2>
+      <p class="section-desc">이론보다 실전. 강의가 끝났을 때 실제로 동작하는 에이전트를 손에 쥐게 됩니다.</p>
+      <div class="learn-grid">
+        <div class="learn-card">
+          <div class="learn-icon">&#129504;</div>
+          <h3>에이전트 아키텍처</h3>
+          <p>LLM이 어떻게 도구를 선택하고 계획을 세우는지 내부 구조를 이해합니다.</p>
+        </div>
+        <div class="learn-card">
+          <div class="learn-icon">&#128296;</div>
+          <h3>도구 & MCP 연동</h3>
+          <p>파일, 웹, 데이터베이스, 외부 API를 에이전트가 자율로 다루도록 설계합니다.</p>
+        </div>
+        <div class="learn-card">
+          <div class="learn-icon">&#9881;&#65039;</div>
+          <h3>워크플로우 자동화</h3>
+          <p>반복 업무를 에이전트 파이프라인으로 전환하는 패턴을 익힙니다.</p>
+        </div>
+        <div class="learn-card">
+          <div class="learn-icon">&#128640;</div>
+          <h3>배포 & 운영</h3>
+          <p>완성한 에이전트를 실제 서비스 환경에 배포하고 안정적으로 운영합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHEDULE -->
+  <section id="schedule">
+    <div class="container">
+      <div class="section-label">Curriculum</div>
+      <h2 class="section-title">4주 커리큘럼</h2>
+      <p class="section-desc">매주 목요일 저녁 7시, 2시간 실시간 강의 + 주말 실습 과제.</p>
+      <div class="schedule-list">
+        <div class="schedule-item">
+          <div class="schedule-week">Week 1</div>
+          <div class="schedule-content">
+            <h3>에이전트 기초 &amp; 환경 세팅</h3>
+            <p>AI 에이전트의 개념, ReAct 루프, Claude Code / Cursor 설치 및 첫 번째 에이전트 실행</p>
+            <div class="schedule-tags">
+              <span class="tag">개념</span>
+              <span class="tag">환경 세팅</span>
+              <span class="tag">Claude API</span>
+            </div>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-week">Week 2</div>
+          <div class="schedule-content">
+            <h3>도구 설계 &amp; MCP 프로토콜</h3>
+            <p>함수 호출 패턴, MCP 서버 연결, 파일·웹·DB 도구 직접 제작</p>
+            <div class="schedule-tags">
+              <span class="tag">Tool Use</span>
+              <span class="tag">MCP</span>
+              <span class="tag">실습</span>
+            </div>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-week">Week 3</div>
+          <div class="schedule-content">
+            <h3>멀티 에이전트 &amp; 워크플로우</h3>
+            <p>오케스트레이터-서브에이전트 구조, 에러 핸들링, 장기 실행 태스크 설계</p>
+            <div class="schedule-tags">
+              <span class="tag">Multi-Agent</span>
+              <span class="tag">오케스트레이션</span>
+              <span class="tag">패턴</span>
+            </div>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-week">Week 4</div>
+          <div class="schedule-content">
+            <h3>실전 프로젝트 &amp; 배포</h3>
+            <p>팀 프로젝트 완성, Vercel / GitHub Actions 배포, 운영 모니터링 셋업</p>
+            <div class="schedule-tags">
+              <span class="tag">프로젝트</span>
+              <span class="tag">배포</span>
+              <span class="tag">발표</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTRUCTOR -->
+  <section id="instructor">
+    <div class="container">
+      <div class="section-label">Instructor</div>
+      <h2 class="section-title">강사 소개</h2>
+      <div class="instructor-card">
+        <div class="instructor-avatar">&#129302;</div>
+        <div class="instructor-info">
+          <h3>김우희</h3>
+          <div class="instructor-title">AI 에이전트 엔지니어 &amp; Woohee Industries COO</div>
+          <p>
+            3년간 Claude, GPT 기반 에이전트 시스템을 실무에 적용해 온 실전 엔지니어.
+            교육 콘텐츠 자동화, 디스코드 봇, VTuber 파이프라인 등 10여 개 에이전트 프로젝트를 직접 설계·운영.
+            "코드를 가르치지 않고, 문제 해결하는 방식을 함께 탐색합니다."
+          </p>
+          <div class="instructor-badges">
+            <span class="instructor-badge">Claude API</span>
+            <span class="instructor-badge">MCP</span>
+            <span class="instructor-badge">Python</span>
+            <span class="instructor-badge">GitHub Actions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="container">
+      <div class="section-label">Enroll Now</div>
+      <h2 class="section-title">지금 바로 시작하세요</h2>
+      <p class="section-desc">선착순 20명 마감. 다음 기수는 일정 미정입니다.</p>
+      <div class="cta-price">₩ 490,000</div>
+      <div class="cta-price-note">4주 전체 과정 · VAT 포함 · 환불 정책 7일</div>
+      <div>
+        <a href="mailto:hello@woohee.store" class="btn-primary">수강 신청 문의하기</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Woohee Industries. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

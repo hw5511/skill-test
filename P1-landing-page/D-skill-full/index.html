@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 에이전트 워크샵 - Woohee Industries</title>
+<style>
+  :root {
+    --bg-primary: #0f0f1a;
+    --bg-secondary: #1a1a2e;
+    --bg-card: #1e1e38;
+    --bg-card-hover: #26264a;
+    --text-primary: #f0f0f5;
+    --text-secondary: #9090a8;
+    --text-muted: #5a5a72;
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --accent-soft: rgba(99, 102, 241, 0.12);
+    --border: rgba(99, 102, 241, 0.15);
+    --border-subtle: rgba(255, 255, 255, 0.05);
+    --gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --gradient-text: linear-gradient(135deg, #818cf8, #c084fc);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    word-break: keep-all;
+    letter-spacing: -0.02em;
+  }
+
+  /* ── Navigation ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: rgba(15, 15, 26, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .nav-brand {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: -0.03em;
+  }
+
+  .nav-brand span {
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-cta {
+    display: inline-block;
+    padding: 0.45rem 1.2rem;
+    background: var(--gradient);
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .nav-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 6rem 1.5rem 4rem;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, var(--bg-secondary), var(--bg-primary));
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 0.35rem 1rem;
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 6vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    max-width: 800px;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    color: var(--text-secondary);
+    max-width: 560px;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  @media (min-width: 480px) {
+    .hero-actions {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 0.9rem 2.2rem;
+    background: var(--gradient);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(99, 102, 241, 0.35);
+  }
+
+  .btn-secondary {
+    display: inline-block;
+    padding: 0.9rem 2.2rem;
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+  }
+
+  /* ── Common Section ── */
+  .section-wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 5rem 1.5rem;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .section-header p {
+    color: var(--text-secondary);
+    margin-top: 0.75rem;
+    font-size: 1rem;
+  }
+
+  /* ── What You'll Learn ── */
+  .learn-section {
+    background: var(--bg-secondary);
+  }
+
+  .learn-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .learn-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (min-width: 1024px) {
+    .learn-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+  }
+
+  .learn-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem 1.5rem;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+
+  .learn-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+
+  .learn-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--accent-soft);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+  }
+
+  .learn-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+
+  .learn-card p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* ── Schedule ── */
+  .schedule-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .schedule-list { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .schedule-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .schedule-item:hover {
+    border-color: var(--border);
+  }
+
+  .schedule-week {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    background: var(--gradient);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .schedule-week .wk-label {
+    font-size: 0.6rem;
+    opacity: 0.8;
+    letter-spacing: 0.05em;
+  }
+
+  .schedule-week .wk-num {
+    font-size: 1.3rem;
+  }
+
+  .schedule-info h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  .schedule-info p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .schedule-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+
+  .tag {
+    padding: 0.2rem 0.6rem;
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  /* ── Instructor ── */
+  .instructor-section {
+    background: var(--bg-secondary);
+  }
+
+  .instructor-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 640px) {
+    .instructor-card {
+      flex-direction: row;
+      text-align: left;
+      padding: 2.5rem;
+    }
+  }
+
+  .instructor-avatar {
+    flex-shrink: 0;
+    width: 90px;
+    height: 90px;
+    background: var(--gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: white;
+  }
+
+  .instructor-info h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 0.2rem;
+  }
+
+  .instructor-role {
+    font-size: 0.85rem;
+    color: var(--accent-hover);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .instructor-bio {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .instructor-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    justify-content: center;
+  }
+
+  @media (min-width: 640px) {
+    .instructor-chips { justify-content: flex-start; }
+  }
+
+  .chip {
+    padding: 0.25rem 0.7rem;
+    background: var(--accent-soft);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: 100px;
+    font-size: 0.78rem;
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    text-align: center;
+    padding: 5rem 1.5rem;
+    background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(99, 102, 241, 0.08), transparent);
+  }
+
+  .cta-section h2 {
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    letter-spacing: -0.03em;
+  }
+
+  .cta-section p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-note {
+    margin-top: 1.25rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border-subtle);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+
+  footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+
+  footer a:hover {
+    color: var(--accent-hover);
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav aria-label="Main navigation">
+  <a href="#" class="nav-brand">Woohee <span>Industries</span></a>
+  <a href="#cta" class="nav-cta">수강 신청</a>
+</nav>
+
+<main>
+
+  <!-- Hero -->
+  <header class="hero" aria-labelledby="hero-heading">
+    <span class="hero-badge">2026 Spring · 4주 집중 과정</span>
+    <h1 id="hero-heading">AI 에이전트<br>실전 워크샵</h1>
+    <p class="hero-sub">
+      Claude Code로 스스로 판단하고 행동하는 AI 에이전트를 직접 만들어보는
+      실전 중심 4주 워크샵. 설치부터 팀 프로젝트까지.
+    </p>
+    <div class="hero-actions">
+      <a href="#cta" class="btn-primary">수강 신청하기</a>
+      <a href="#schedule" class="btn-secondary">커리큘럼 보기</a>
+    </div>
+    <div class="hero-stats" role="list" aria-label="강의 주요 정보">
+      <div class="stat" role="listitem">
+        <span class="stat-number">4주</span>
+        <span class="stat-label">집중 과정</span>
+      </div>
+      <div class="stat" role="listitem">
+        <span class="stat-number">16h</span>
+        <span class="stat-label">총 강의 시간</span>
+      </div>
+      <div class="stat" role="listitem">
+        <span class="stat-number">20명</span>
+        <span class="stat-label">소규모 정원</span>
+      </div>
+      <div class="stat" role="listitem">
+        <span class="stat-number">100%</span>
+        <span class="stat-label">실습 기반</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- What You'll Learn -->
+  <section class="learn-section" aria-labelledby="learn-heading">
+    <div class="section-wrap">
+      <div class="section-header">
+        <span class="section-badge">What You'll Learn</span>
+        <h2 id="learn-heading">이런 것들을 배웁니다</h2>
+        <p>에이전트 기초부터 실전 자동화 시스템 구축까지 단계적으로 학습합니다</p>
+      </div>
+      <div class="learn-grid">
+        <div class="learn-card">
+          <div class="learn-icon" aria-hidden="true">&#x1F9E0;</div>
+          <h3>에이전트 작동 원리</h3>
+          <p>AI 에이전트가 환경을 인식하고 자율적으로 판단하는 메커니즘을 이해합니다.</p>
+        </div>
+        <div class="learn-card">
+          <div class="learn-icon" aria-hidden="true">&#x1F527;</div>
+          <h3>도구 연동 &amp; MCP</h3>
+          <p>MCP 서버, 외부 API, 파일 시스템 등 에이전트가 활용하는 도구를 직접 연결합니다.</p>
+        </div>
+        <div class="learn-card">
+          <div class="learn-icon" aria-hidden="true">&#x26A1;</div>
+          <h3>워크플로우 자동화</h3>
+          <p>반복 업무를 에이전트로 자동화하는 파이프라인을 설계하고 구현합니다.</p>
+        </div>
+        <div class="learn-card">
+          <div class="learn-icon" aria-hidden="true">&#x1F680;</div>
+          <h3>실전 팀 프로젝트</h3>
+          <p>팀원과 함께 실제 비즈니스 문제를 해결하는 에이전트 시스템을 완성합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schedule -->
+  <section aria-labelledby="schedule-heading" id="schedule">
+    <div class="section-wrap">
+      <div class="section-header">
+        <span class="section-badge">Schedule</span>
+        <h2 id="schedule-heading">4주 커리큘럼</h2>
+        <p>매주 토요일 4시간, 이론 20% + 실습 80% 구성</p>
+      </div>
+      <div class="schedule-list">
+        <div class="schedule-item">
+          <div class="schedule-week" aria-label="1주차">
+            <span class="wk-label">WEEK</span>
+            <span class="wk-num">1</span>
+          </div>
+          <div class="schedule-info">
+            <h3>에이전트 기초 &amp; 환경 세팅</h3>
+            <p>Claude Code 설치, 기본 명령어, 첫 번째 에이전트 실행까지 한 번에 완성합니다.</p>
+            <div class="schedule-tags">
+              <span class="tag">설치</span>
+              <span class="tag">CLI 기초</span>
+              <span class="tag">첫 실습</span>
+            </div>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-week" aria-label="2주차">
+            <span class="wk-label">WEEK</span>
+            <span class="wk-num">2</span>
+          </div>
+          <div class="schedule-info">
+            <h3>도구 활용 &amp; MCP 연동</h3>
+            <p>파일, 웹, API, 데이터베이스를 에이전트에 연결하고 도구 활용 패턴을 익힙니다.</p>
+            <div class="schedule-tags">
+              <span class="tag">MCP</span>
+              <span class="tag">API 연동</span>
+              <span class="tag">도구 설계</span>
+            </div>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-week" aria-label="3주차">
+            <span class="wk-label">WEEK</span>
+            <span class="wk-num">3</span>
+          </div>
+          <div class="schedule-info">
+            <h3>자동화 파이프라인 구축</h3>
+            <p>반복 작업을 자동화하는 멀티스텝 워크플로우를 직접 설계하고 구현합니다.</p>
+            <div class="schedule-tags">
+              <span class="tag">워크플로우</span>
+              <span class="tag">자동화</span>
+              <span class="tag">오케스트레이션</span>
+            </div>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-week" aria-label="4주차">
+            <span class="wk-label">WEEK</span>
+            <span class="wk-num">4</span>
+          </div>
+          <div class="schedule-info">
+            <h3>팀 프로젝트 &amp; 발표</h3>
+            <p>실제 비즈니스 시나리오를 기반으로 팀 에이전트 시스템을 완성하고 발표합니다.</p>
+            <div class="schedule-tags">
+              <span class="tag">팀 프로젝트</span>
+              <span class="tag">발표</span>
+              <span class="tag">피드백</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Instructor -->
+  <section class="instructor-section" aria-labelledby="instructor-heading">
+    <div class="section-wrap">
+      <div class="section-header">
+        <span class="section-badge">Instructor</span>
+        <h2 id="instructor-heading">강사 소개</h2>
+      </div>
+      <div class="instructor-card">
+        <div class="instructor-avatar" aria-hidden="true">우</div>
+        <div class="instructor-info">
+          <h3>우희 (Woohee)</h3>
+          <p class="instructor-role">Woohee Industries COO &amp; AI 에이전트 전문가</p>
+          <p class="instructor-bio">
+            AI 에이전트 시스템 설계 및 실전 자동화 3년 경력.
+            Claude Code 기반 에이전트 솔루션을 다수 기업에 도입했으며,
+            현재 Woohee Industries에서 AI 교육 프로그램을 총괄하고 있습니다.
+          </p>
+          <div class="instructor-chips">
+            <span class="chip">Claude Code</span>
+            <span class="chip">MCP 전문</span>
+            <span class="chip">워크플로우 자동화</span>
+            <span class="chip">AI 교육</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="cta" aria-labelledby="cta-heading">
+    <h2 id="cta-heading">지금 바로 시작하세요</h2>
+    <p>선착순 20명 마감. 얼리버드 신청 시 20% 할인 혜택이 제공됩니다.</p>
+    <a href="#" class="btn-primary">수강 신청하기</a>
+    <p class="cta-note">문의: contact@woohee.store &nbsp;|&nbsp; 환불 정책: 1주차 내 전액 환불</p>
+  </section>
+
+</main>
+
+<footer>
+  <p>
+    &copy; 2026 <a href="https://woohee.store">Woohee Industries</a>. All rights reserved.
+    &nbsp;&middot;&nbsp; AI 에이전트 워크샵
+  </p>
+</footer>
+
+</body>
+</html>
