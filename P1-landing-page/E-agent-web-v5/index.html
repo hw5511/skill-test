@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 에이전트 워크숍</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;600&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #0d0d0d;
+      --color-secondary: #744885;
+      --color-primary: #42b5cd;
+      --color-accent: #00e5ff;
+      --color-text: #ffffff;
+      --color-text-muted: #8a8a9a;
+      --color-surface: #141420;
+      --color-border: #1e1e2e;
+      --font-title: 'Space Mono', 'Nanum Gothic', monospace;
+      --font-body: 'IBM Plex Mono', 'Nanum Gothic', monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ========== SCROLL PROGRESS ========== */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-secondary), var(--color-primary), var(--color-accent));
+      z-index: 1000;
+      animation: progress linear;
+      animation-timeline: scroll();
+    }
+
+    @keyframes progress {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+
+    /* ========== NAV ========== */
+    nav {
+      position: fixed;
+      top: 3px;
+      left: 0;
+      right: 0;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(13, 13, 13, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .nav-logo {
+      font-family: var(--font-title);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--color-accent);
+    }
+
+    /* ========== HERO ========== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      animation: grid-drift 20s linear infinite;
+    }
+
+    @keyframes grid-drift {
+      from { transform: translateY(0); }
+      to { transform: translateY(48px); }
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(116, 72, 133, 0.25) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: glow-pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--color-accent);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-family: var(--font-body);
+      color: var(--color-accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      position: relative;
+      animation: badge-appear 0.8s ease both;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      animation: blink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    @keyframes badge-appear {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-title {
+      font-family: var(--font-title);
+      font-size: clamp(2.4rem, 7vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      position: relative;
+      margin-bottom: 1.5rem;
+      animation: title-appear 0.9s 0.2s ease both;
+    }
+
+    @keyframes title-appear {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-title .accent {
+      color: var(--color-accent);
+      text-shadow: 0 0 40px rgba(0, 229, 255, 0.5);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--color-text-muted);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.9;
+      letter-spacing: 0.01em;
+      animation: title-appear 0.9s 0.35s ease both;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+      animation: title-appear 0.9s 0.5s ease both;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 0.85rem 2.2rem;
+      background: var(--color-accent);
+      color: #0d0d0d;
+      font-family: var(--font-title);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary);
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      padding: 0.85rem 2.2rem;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      font-family: var(--font-title);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border-color 0.3s, color 0.3s, transform 0.3s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: translateY(-2px);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      margin-top: 4rem;
+      position: relative;
+      animation: title-appear 0.9s 0.65s ease both;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-num {
+      display: block;
+      font-family: var(--font-title);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-accent);
+    }
+
+    .hero-stat-label {
+      font-size: 0.78rem;
+      color: var(--color-text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ========== SECTION COMMON ========== */
+    section {
+      padding: 6rem 2rem;
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      margin-bottom: 3.5rem;
+    }
+
+    .section-badge {
+      display: inline-block;
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: var(--font-title);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+
+    .section-desc {
+      margin-top: 1rem;
+      color: var(--color-text-muted);
+      font-size: 1rem;
+      max-width: 560px;
+      line-height: 1.9;
+    }
+
+    /* ========== LEARN SECTION ========== */
+    #learn {
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .learn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .learn-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+
+    .learn-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-secondary), var(--color-primary));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .learn-card:hover {
+      border-color: var(--color-primary);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(66, 181, 205, 0.12);
+    }
+
+    .learn-card:hover::before {
+      opacity: 1;
+    }
+
+    .learn-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .learn-card-title {
+      font-family: var(--font-title);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+    }
+
+    .learn-card-desc {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      line-height: 1.85;
+    }
+
+    .learn-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      border-radius: 100px;
+      padding: 0.2rem 0.7rem;
+    }
+
+    /* ========== SCHEDULE SECTION ========== */
+    #schedule {
+      background: var(--color-bg);
+    }
+
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .week-card {
+      padding: 2rem 1.6rem;
+      border-right: 1px solid var(--color-border);
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .week-card:last-child {
+      border-right: none;
+    }
+
+    .week-card:hover {
+      background: var(--color-surface);
+    }
+
+    .week-number {
+      font-family: var(--font-title);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .week-title {
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      line-height: 1.3;
+    }
+
+    .week-accent {
+      color: var(--color-accent);
+    }
+
+    .week-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .week-items li {
+      font-size: 0.82rem;
+      color: var(--color-text-muted);
+      padding-left: 1rem;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .week-items li::before {
+      content: '>';
+      position: absolute;
+      left: 0;
+      color: var(--color-primary);
+      font-family: var(--font-title);
+    }
+
+    .week-highlight {
+      border-top: 2px solid var(--color-accent);
+    }
+
+    /* ========== INSTRUCTOR SECTION ========== */
+    #instructor {
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .instructor-layout {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+
+    .instructor-avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .instructor-avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.3));
+    }
+
+    .instructor-name {
+      font-family: var(--font-title);
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .instructor-role {
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      letter-spacing: 0.05em;
+      margin-bottom: 1.2rem;
+    }
+
+    .instructor-bio {
+      font-size: 0.95rem;
+      color: var(--color-text-muted);
+      line-height: 1.9;
+      max-width: 560px;
+      margin-bottom: 1.5rem;
+    }
+
+    .instructor-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      font-family: var(--font-body);
+      letter-spacing: 0.05em;
+      padding: 0.3rem 0.9rem;
+      background: rgba(66, 181, 205, 0.08);
+      border: 1px solid rgba(66, 181, 205, 0.2);
+      border-radius: 100px;
+      color: var(--color-primary);
+    }
+
+    .instructor-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .instructor-stat-num {
+      display: block;
+      font-family: var(--font-title);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--color-accent);
+    }
+
+    .instructor-stat-label {
+      font-size: 0.78rem;
+      color: var(--color-text-muted);
+    }
+
+    /* ========== CTA SECTION ========== */
+    #cta {
+      background: var(--color-bg);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-glow {
+      position: absolute;
+      width: 500px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(0, 229, 255, 0.08) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .cta-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: 1.2rem;
+      position: relative;
+    }
+
+    .cta-title {
+      font-family: var(--font-title);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1.2rem;
+      position: relative;
+    }
+
+    .cta-desc {
+      font-size: 1rem;
+      color: var(--color-text-muted);
+      max-width: 480px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.9;
+      position: relative;
+    }
+
+    .cta-form {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .cta-input {
+      padding: 0.85rem 1.4rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      width: 280px;
+      transition: border-color 0.3s;
+      outline: none;
+    }
+
+    .cta-input::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    .cta-input:focus {
+      border-color: var(--color-primary);
+    }
+
+    .cta-note {
+      margin-top: 1.2rem;
+      font-size: 0.78rem;
+      color: var(--color-text-muted);
+      position: relative;
+    }
+
+    /* ========== FOOTER ========== */
+    footer {
+      padding: 2rem;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: var(--font-title);
+      font-size: 0.85rem;
+      color: var(--color-accent);
+      letter-spacing: 0.1em;
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: var(--color-text-muted);
+    }
+
+    /* ========== MOBILE ========== */
+    @media (max-width: 768px) {
+      nav {
+        padding: 0.9rem 1.2rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      section {
+        padding: 4rem 1.2rem;
+      }
+
+      .hero-stats {
+        gap: 2rem;
+      }
+
+      .instructor-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .instructor-avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+      }
+
+      .instructor-stats {
+        gap: 1.5rem;
+      }
+
+      .schedule-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .week-card {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .week-card:last-child {
+        border-bottom: none;
+      }
+
+      .cta-input {
+        width: 100%;
+      }
+
+      footer {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scroll-progress"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#hero" class="nav-logo">AI AGENT WS</a>
+    <ul class="nav-links">
+      <li><a href="#learn">커리큘럼</a></li>
+      <li><a href="#schedule">일정</a></li>
+      <li><a href="#instructor">강사</a></li>
+      <li><a href="#cta">신청</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-glow"></div>
+
+    <div class="hero-badge">2026 Spring Cohort</div>
+
+    <h1 class="hero-title">
+      AI 에이전트<br>
+      <span class="accent">워크숍</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      스스로 판단하고 행동하는 AI를 직접 만들어보는<br>
+      4주 집중 실습 과정. 이론보다 실전, 개념보다 코드.
+    </p>
+
+    <div class="hero-ctas">
+      <a href="#cta" class="btn-primary">지금 신청하기</a>
+      <a href="#learn" class="btn-secondary">커리큘럼 보기</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-num">4주</span>
+        <span class="hero-stat-label">집중 과정</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">20명</span>
+        <span class="hero-stat-label">소규모 정원</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">100%</span>
+        <span class="hero-stat-label">실습 중심</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEARN -->
+  <section id="learn">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-badge">What You'll Learn</span>
+        <h2 class="section-title">이 과정에서 배우는 것</h2>
+        <p class="section-desc">
+          AI 에이전트 개발에 필요한 핵심 역량을<br>
+          실습 중심으로 체득합니다.
+        </p>
+      </div>
+
+      <div class="learn-grid">
+        <div class="learn-card">
+          <div class="learn-icon">&#9881;</div>
+          <h3 class="learn-card-title">에이전트 아키텍처</h3>
+          <p class="learn-card-desc">
+            ReAct, Plan-and-Execute 등 에이전트 설계 패턴을 이해하고
+            목적에 맞는 구조를 직접 설계합니다.
+          </p>
+          <span class="learn-tag">Architecture</span>
+        </div>
+
+        <div class="learn-card">
+          <div class="learn-icon">&#128279;</div>
+          <h3 class="learn-card-title">도구 연동 (Tool Use)</h3>
+          <p class="learn-card-desc">
+            파일 시스템, 웹 검색, 외부 API를 에이전트가
+            스스로 호출하도록 MCP 기반 도구를 구성합니다.
+          </p>
+          <span class="learn-tag">MCP / API</span>
+        </div>
+
+        <div class="learn-card">
+          <div class="learn-icon">&#128260;</div>
+          <h3 class="learn-card-title">멀티 에이전트 시스템</h3>
+          <p class="learn-card-desc">
+            오케스트레이터-서브에이전트 패턴으로
+            복잡한 워크플로우를 분산 처리하는 구조를 구현합니다.
+          </p>
+          <span class="learn-tag">Multi-Agent</span>
+        </div>
+
+        <div class="learn-card">
+          <div class="learn-icon">&#128640;</div>
+          <h3 class="learn-card-title">실전 프로젝트 배포</h3>
+          <p class="learn-card-desc">
+            개인 프로젝트를 완성하고 GitHub Actions로
+            자동 배포 파이프라인까지 구축합니다.
+          </p>
+          <span class="learn-tag">Deploy</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHEDULE -->
+  <section id="schedule">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-badge">Curriculum</span>
+        <h2 class="section-title">4주 커리큘럼</h2>
+        <p class="section-desc">
+          매주 명확한 목표와 결과물. 끝나면 포트폴리오가 완성됩니다.
+        </p>
+      </div>
+
+      <div class="schedule-grid">
+        <div class="week-card">
+          <div class="week-number">Week 01</div>
+          <div class="week-title">에이전트<br><span class="week-accent">기초</span></div>
+          <ul class="week-items">
+            <li>LLM과 에이전트의 차이</li>
+            <li>Claude API 연동</li>
+            <li>단일 에이전트 구현</li>
+            <li>프롬프트 엔지니어링</li>
+          </ul>
+        </div>
+
+        <div class="week-card">
+          <div class="week-number">Week 02</div>
+          <div class="week-title">도구 &amp;<br><span class="week-accent">메모리</span></div>
+          <ul class="week-items">
+            <li>MCP 서버 설정</li>
+            <li>파일·웹·DB 도구 연동</li>
+            <li>컨텍스트 관리 전략</li>
+            <li>에이전트 루프 구현</li>
+          </ul>
+        </div>
+
+        <div class="week-card">
+          <div class="week-number">Week 03</div>
+          <div class="week-title">멀티 에이전트<br><span class="week-accent">시스템</span></div>
+          <ul class="week-items">
+            <li>오케스트레이터 패턴</li>
+            <li>서브에이전트 분기</li>
+            <li>병렬 실행 최적화</li>
+            <li>에러 복구 전략</li>
+          </ul>
+        </div>
+
+        <div class="week-card week-highlight">
+          <div class="week-number">Week 04</div>
+          <div class="week-title">실전<br><span class="week-accent">프로젝트</span></div>
+          <ul class="week-items">
+            <li>개인 프로젝트 완성</li>
+            <li>코드 리뷰 &amp; 피드백</li>
+            <li>GitHub Actions 배포</li>
+            <li>최종 발표 &amp; 수료</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTRUCTOR -->
+  <section id="instructor">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-badge">Instructor</span>
+        <h2 class="section-title">강사 소개</h2>
+      </div>
+
+      <div class="instructor-layout">
+        <div class="instructor-avatar">&#129302;</div>
+
+        <div>
+          <div class="instructor-name">김우희</div>
+          <div class="instructor-role">AI 에이전트 엔지니어 / Woohee Industries COO</div>
+          <p class="instructor-bio">
+            AI 에이전트 시스템 설계 및 구축 3년 경력.
+            실제 프로덕션 환경에서 멀티 에이전트 파이프라인을 운영한 경험을 바탕으로
+            이론보다 실전에 집중하는 강의를 진행합니다.
+            Claude Code, LangGraph, AutoGen 기반 프로젝트 다수 배포.
+          </p>
+          <div class="instructor-tags">
+            <span class="tag">Claude API</span>
+            <span class="tag">MCP</span>
+            <span class="tag">LangGraph</span>
+            <span class="tag">Python</span>
+            <span class="tag">GitHub Actions</span>
+          </div>
+
+          <div class="instructor-stats">
+            <div>
+              <span class="instructor-stat-num">3년+</span>
+              <span class="instructor-stat-label">AI 에이전트 경력</span>
+            </div>
+            <div>
+              <span class="instructor-stat-num">15+</span>
+              <span class="instructor-stat-label">배포 프로젝트</span>
+            </div>
+            <div>
+              <span class="instructor-stat-num">200+</span>
+              <span class="instructor-stat-label">수강생 배출</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="cta-glow"></div>
+    <div class="section-inner">
+      <div class="cta-label">Limited Seats — 20명 선착순</div>
+      <h2 class="cta-title">
+        지금 바로<br>시작하세요
+      </h2>
+      <p class="cta-desc">
+        이메일을 남기면 개강 일정과 상세 커리큘럼을
+        먼저 보내드립니다. 스팸 없음.
+      </p>
+      <div class="cta-form">
+        <input type="email" class="cta-input" placeholder="이메일을 입력하세요">
+        <a href="#" class="btn-primary">사전 신청</a>
+      </div>
+      <p class="cta-note">* 2026년 5월 개강 예정 / 온라인 + 오프라인 병행</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">AI AGENT WORKSHOP</div>
+    <div class="footer-copy">&#169; 2026 Woohee Industries. All rights reserved.</div>
+  </footer>
+
+</body>
+</html>

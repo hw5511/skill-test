@@ -38,7 +38,7 @@
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
@@ -120,6 +120,7 @@
   <tr><td>B-skill-basic</td><td>Basic SKILL.md only</td><td>SKILL.md (trigger + summary)</td></tr>
   <tr><td>C-skill-rules</td><td>SKILL.md + rules</td><td>SKILL.md + rules/*.md</td></tr>
   <tr><td>D-skill-full</td><td>Full skill package</td><td>SKILL.md + rules/ + examples/</td></tr>
+  <tr><td>E-agent-web-v5</td><td>Production CLAUDE.md (445 lines)</td><td>48-agent-web v5 system prompt</td></tr>
 </table>
 
 <div id="results-container">
@@ -128,7 +129,7 @@
 </div>
 
 <script>
-const LEVELS = ['A-control', 'B-skill-basic', 'C-skill-rules', 'D-skill-full'];
+const LEVELS = ['A-control', 'B-skill-basic', 'C-skill-rules', 'D-skill-full', 'E-agent-web-v5'];
 
 async function loadResults() {
   const container = document.getElementById('results-container');
