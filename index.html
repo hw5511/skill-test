@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Test Hub - Woohee Industries</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2a2d3a;
+    --text: #e4e4e7;
+    --text-dim: #8b8d98;
+    --accent: #6366f1;
+    --accent-dim: #4f46e5;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .subtitle { color: var(--text-dim); margin-bottom: 2rem; }
+  .matrix { margin-top: 2rem; }
+  .matrix h2 {
+    font-size: 1.2rem;
+    padding: 0.8rem 1rem;
+    background: var(--accent-dim);
+    border-radius: 8px 8px 0 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  .cell {
+    background: var(--surface);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .cell-header {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .cell-title { font-weight: 600; font-size: 0.9rem; }
+  .cell a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+  }
+  .cell a:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .badge-pending { background: var(--border); color: var(--text-dim); }
+  .badge-done { background: #16472a; color: var(--green); }
+  .badge-running { background: #422006; color: var(--yellow); }
+  .legend {
+    display: flex;
+    gap: 1.5rem;
+    margin: 1rem 0 2rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  .info-table th, .info-table td {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+    text-align: left;
+    font-size: 0.85rem;
+  }
+  .info-table th {
+    background: var(--surface);
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  #results-container { margin-top: 2rem; }
+</style>
+</head>
+<body>
+
+<h1>Skill Test Hub</h1>
+<p class="subtitle">AI Agent Skill Effectiveness Research - Woohee Industries</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="badge badge-pending">PENDING</span> Not yet run</div>
+  <div class="legend-item"><span class="badge badge-running">RUNNING</span> In progress</div>
+  <div class="legend-item"><span class="badge badge-done">DONE</span> Results available</div>
+</div>
+
+<table class="info-table">
+  <tr><th>Level</th><th>Description</th><th>Contents</th></tr>
+  <tr><td>A-control</td><td>No skill (baseline)</td><td>Empty - pure sonnet</td></tr>
+  <tr><td>B-skill-basic</td><td>Basic SKILL.md only</td><td>SKILL.md (trigger + summary)</td></tr>
+  <tr><td>C-skill-rules</td><td>SKILL.md + rules</td><td>SKILL.md + rules/*.md</td></tr>
+  <tr><td>D-skill-full</td><td>Full skill package</td><td>SKILL.md + rules/ + examples/</td></tr>
+</table>
+
+<div id="results-container">
+  <!-- Dynamically populated by results.json -->
+  <p style="color: var(--text-dim); margin-top: 2rem;">Loading experiments...</p>
+</div>
+
+<script>
+const LEVELS = ['A-control', 'B-skill-basic', 'C-skill-rules', 'D-skill-full'];
+
+async function loadResults() {
+  const container = document.getElementById('results-container');
+  try {
+    const res = await fetch('results.json');
+    const data = await res.json();
+    container.innerHTML = '';
+
+    for (const prompt of data.prompts) {
+      const section = document.createElement('div');
+      section.className = 'matrix';
+      section.innerHTML = `<h2>${prompt.id}: ${prompt.title}</h2>`;
+
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+
+      for (const level of LEVELS) {
+        const exp = prompt.experiments?.[level];
+        const status = exp?.status || 'pending';
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.innerHTML = `
+          <div class="cell-header">${level}</div>
+          <span class="badge badge-${status}">${status.toUpperCase()}</span>
+          ${exp?.files ? exp.files.map(f =>
+            `<a href="${prompt.id}/${level}/${f}" target="_blank">${f}</a>`
+          ).join('') : '<span style="color:var(--text-dim);font-size:0.8rem">No results yet</span>'}
+        `;
+        grid.appendChild(cell);
+      }
+
+      section.appendChild(grid);
+      container.appendChild(section);
+    }
+  } catch (e) {
+    container.innerHTML = '<p style="color:var(--text-dim)">No experiments yet. Run tests first.</p>';
+  }
+}
+
+loadResults();
+</script>
+
+</body>
+</html>
