@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent - Test</title>
+    <style>
+/* ============================================================
+   Lecture Builder - Design System
+   v3.0 | 12 Slide Types
+   ============================================================ */
+
+/* -------------------------------------------------------
+   1. CSS Custom Properties
+------------------------------------------------------- */
+:root {
+    --primary: #0f172a;
+    --primary-fg: #f8fafc;
+    --accent: #4f46e5;
+    --accent-fg: #ffffff;
+    --accent-hover: #4338ca;
+    --muted-fg: #64748b;
+    --border: #e2e8f0;
+    --card-bg: #f8fafc;
+    --section-bg: #ffffff;
+    --dark-bg: #0f172a;
+    --dark-secondary: #1e293b;
+    --dark-accent: #6366f1;
+    --section-padding: clamp(2rem, 5vw, 4rem);
+    --container-max: 960px;
+}
+
+/* -------------------------------------------------------
+   2. Base & Reset
+------------------------------------------------------- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+    line-height: 1.7;
+    color: var(--primary);
+    background: var(--section-bg);
+    word-break: keep-all;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+}
+
+.presentation-container {
+    overflow: hidden;
+}
+
+/* -------------------------------------------------------
+   3. Section Base (100vh, vertically centered)
+------------------------------------------------------- */
+.section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--section-padding);
+    scroll-snap-align: start;
+    background: var(--section-bg);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.section-container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin: 0 auto;
+}
+
+.section-header {
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.section-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--accent);
+    color: var(--accent-fg);
+    border-radius: 4px;
+    font-size: clamp(0.65rem, 1vw, 0.72rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+}
+
+.section-title {
+    font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+}
+
+.content-area {
+    font-size: clamp(0.9rem, 1.4vw, 1rem);
+    line-height: 1.75;
+    color: #334155;
+}
+
+.content-area p {
+    margin-bottom: 1rem;
+}
+
+.content-area ul,
+.content-area ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.content-area li {
+    margin-bottom: 0.4rem;
+}
+
+.content-area h3 {
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
+    font-weight: 700;
+    color: var(--primary);
+    margin: 1.25rem 0 0.5rem;
+}
+
+.content-area strong {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* -------------------------------------------------------
+   4. Cover Slide (hero-section)
+------------------------------------------------------- */
+.hero-section {
+    background: var(--dark-bg);
+    color: var(--primary-fg);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero-content {
+    width: 100%;
+    max-width: var(--container-max);
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    margin-bottom: 0;
+}
+
+.hero-title-main {
+    display: block;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--primary-fg);
+    background: linear-gradient(135deg, #f8fafc 0%, #c7d2fe 60%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-divider {
+    width: clamp(3rem, 6vw, 5rem);
+    height: 3px;
+    background: linear-gradient(90deg, var(--dark-accent), transparent);
+    margin: 1.5rem auto;
+    border-radius: 2px;
+}
+
+.hero-tagline {
+    font-size: clamp(1rem, 2.2vw, 1.4rem);
+    color: #94a3b8;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+}
+
+.hero-meta {
+    display: flex;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.meta-label {
+    font-size: clamp(0.65rem, 1vw, 0.7rem);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.meta-value {
+    font-size: clamp(0.85rem, 1.4vw, 1rem);
+    color: #cbd5e1;
+    font-weight: 500;
+}
+
+/* -------------------------------------------------------
+   5. Section Break Slide (section--dark)
+------------------------------------------------------- */
+.section--dark {
+    background: var(--dark-secondary);
+    color: var(--primary-fg);
+    position: relative;
+    overflow: hidden;
+}
+
+.section--dark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.insight-center {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.insight-hero-text p {
+    font-size: clamp(1.5rem, 4vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--primary-fg);
+    letter-spacing: -0.02em;
+    margin-bottom: 0;
+}
+
+.insight-hero-text strong {
+    color: #a5b4fc;
+    font-weight: 800;
+}
+
+.insight-divider {
+    width: clamp(3rem, 5vw, 4rem);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--dark-accent), transparent);
+    margin: 1.5rem auto;
+    border-radius: 2px;
+}
+
+.insight-detail {
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+    color: #94a3b8;
+    line-height: 1.75;
+}
+
+/* -------------------------------------------------------
+   6. Split Layout (title-split)
+------------------------------------------------------- */
+.split-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 3vw, 2rem);
+}
+
+@media (min-width: 768px) {
+    .split-layout {
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(2rem, 4vw, 3rem);
+    }
+}
+
+.split-left,
+.split-right {
+    padding: clamp(1.25rem, 2.5vw, 2rem);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    font-size: clamp(0.875rem, 1.3vw, 0.95rem);
+    line-height: 1.75;
+    color: #334155;
+}
+
+.split-left h3,
+.split-right h3 {
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+}
+
+.split-left p,
+.split-right p {
+    margin-bottom: 0.75rem;
+}
+
+.split-left strong,
+.split-right strong {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+/* -------------------------------------------------------
+   7. Concept List (title-list)
+------------------------------------------------------- */
+.concept-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 1.5vw, 1rem);
+}
+
+.concept-item {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    padding: clamp(1rem, 2vw, 1.25rem) clamp(1.25rem, 2.5vw, 1.75rem);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.concept-item:hover {
+    border-color: #c7d2fe;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.08);
+}
+
+.concept-num {
+    flex-shrink: 0;
+    width: clamp(2rem, 3.5vw, 2.5rem);
+    height: clamp(2rem, 3.5vw, 2.5rem);
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-fg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.7rem, 1vw, 0.8rem);
+    font-weight: 800;
+    letter-spacing: 0;
+    margin-top: 0.1rem;
+}
+
+.concept-item strong {
+    display: block;
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+
+.concept-item p {
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    color: var(--muted-fg);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* -------------------------------------------------------
+   8. Card Grid (title-grid)
+------------------------------------------------------- */
+.curriculum-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(0.75rem, 1.5vw, 1rem);
+}
+
+@media (min-width: 600px) {
+    .curriculum-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 900px) {
+    .curriculum-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+}
+
+.curr-card {
+    padding: clamp(1rem, 2vw, 1.5rem);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.curr-card:hover {
+    border-color: #c7d2fe;
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.1);
+    transform: translateY(-2px);
+}
+
+.curr-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.curr-num {
+    flex-shrink: 0;
+    width: clamp(1.75rem, 3vw, 2.25rem);
+    height: clamp(1.75rem, 3vw, 2.25rem);
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--accent-fg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.65rem, 0.9vw, 0.75rem);
+    font-weight: 800;
+    margin-top: 0.1rem;
+}
+
+.curr-title {
+    font-size: clamp(0.875rem, 1.4vw, 1rem);
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.4;
+}
+
+.curr-title strong {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.curr-hours {
+    font-size: clamp(0.7rem, 1vw, 0.8rem);
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 0.2rem;
+}
+
+/* -------------------------------------------------------
+   9. Image Slide (title-image)
+------------------------------------------------------- */
+.image-center {
+    text-align: center;
+}
+
+.image-full {
+    margin: 0 auto clamp(0.75rem, 1.5vw, 1rem);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    max-width: 800px;
+}
+
+.image-full img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    object-fit: contain;
+    background: var(--card-bg);
+}
+
+.image-caption {
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    color: var(--muted-fg);
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* -------------------------------------------------------
+   10. Table (comparison / title-table)
+------------------------------------------------------- */
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.8rem, 1.3vw, 0.9rem);
+    background: var(--section-bg);
+}
+
+thead {
+    background: var(--primary);
+    color: var(--primary-fg);
+}
+
+thead th {
+    padding: clamp(0.6rem, 1.2vw, 0.875rem) clamp(0.75rem, 1.5vw, 1.25rem);
+    text-align: left;
+    font-size: clamp(0.7rem, 1vw, 0.8rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #f1f5f9;
+}
+
+tbody td {
+    padding: clamp(0.6rem, 1.2vw, 0.875rem) clamp(0.75rem, 1.5vw, 1.25rem);
+    color: #334155;
+    vertical-align: top;
+    line-height: 1.6;
+}
+
+tbody td:first-child {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* -------------------------------------------------------
+   11. Timeline (title-timeline)
+------------------------------------------------------- */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    position: relative;
+    padding-bottom: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: calc(clamp(2rem, 3.5vw, 2.5rem) / 2 - 1px);
+    top: clamp(2rem, 3.5vw, 2.5rem);
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--border));
+}
+
+.timeline-item--last {
+    padding-bottom: 0;
+}
+
+.timeline-item--last::before {
+    display: none;
+}
+
+.timeline-marker {
+    flex-shrink: 0;
+    width: clamp(2rem, 3.5vw, 2.5rem);
+    height: clamp(2rem, 3.5vw, 2.5rem);
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-fg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.7rem, 1vw, 0.8rem);
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+    position: relative;
+    z-index: 1;
+}
+
+.timeline-content {
+    padding-top: 0.2rem;
+    padding-bottom: 0.5rem;
+}
+
+.timeline-title {
+    font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+}
+
+.timeline-title strong {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.timeline-desc {
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    color: var(--muted-fg);
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* -------------------------------------------------------
+   12. Quote Slide (title-quote)
+------------------------------------------------------- */
+.slide-quote {
+    border: none;
+    padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem);
+    background: var(--card-bg);
+    border-radius: 16px;
+    border-left: 4px solid var(--accent);
+    position: relative;
+}
+
+.slide-quote::before {
+    content: 'C';
+    position: absolute;
+    top: clamp(0.5rem, 1.5vw, 1rem);
+    left: clamp(1rem, 2vw, 1.5rem);
+    font-size: clamp(4rem, 8vw, 7rem);
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.15;
+    font-family: Georgia, serif;
+    pointer-events: none;
+}
+
+.quote-text {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 500;
+    color: var(--primary);
+    line-height: 1.75;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.5rem;
+}
+
+.quote-text strong {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.quote-attribution {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.quote-author {
+    font-size: clamp(0.85rem, 1.3vw, 1rem);
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.quote-source {
+    font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+    color: var(--muted-fg);
+}
+
+/* -------------------------------------------------------
+   13. Stats Grid (title-stats)
+------------------------------------------------------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+@media (min-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+.stat-card {
+    padding: clamp(1.25rem, 2.5vw, 1.75rem);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    text-align: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    border-color: #c7d2fe;
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.1);
+}
+
+.stat-number {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+}
+
+.stat-number strong {
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.stat-label {
+    font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.35rem;
+}
+
+.stat-desc {
+    font-size: clamp(0.7rem, 1vw, 0.8rem);
+    color: var(--muted-fg);
+    line-height: 1.55;
+    margin: 0;
+}
+
+/* -------------------------------------------------------
+   14. Code Block
+------------------------------------------------------- */
+.code-block {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    font-size: clamp(0.78rem, 1.1vw, 0.875rem);
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid #1e293b;
+    position: relative;
+}
+
+.code-block[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #475569;
+    font-weight: 700;
+}
+
+.code-block code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+}
+
+code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    background: #f1f5f9;
+    color: #e11d48;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.875em;
+}
+
+/* -------------------------------------------------------
+   15. Inline Elements
+------------------------------------------------------- */
+strong {
+    font-weight: 700;
+}
+
+em {
+    font-style: italic;
+    color: var(--muted-fg);
+}
+
+a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+a:hover {
+    color: var(--accent-hover);
+}
+
+p {
+    margin-bottom: 0.75rem;
+}
+
+ul, ol {
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+li {
+    margin-bottom: 0.35rem;
+    line-height: 1.7;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+}
+
+/* -------------------------------------------------------
+   16. Utilities
+------------------------------------------------------- */
+@media print {
+    .section {
+        page-break-after: always;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    html {
+        scroll-snap-type: none;
+    }
+}
+
+</style>
+</head>
+<body>
+    <div class="presentation-container">
+
+<section class="section hero-section">
+  <div class="hero-content">
+    <div class="hero-title"><span class="hero-title-main">AI 에이전트 사내교육</span></div>
+    <div class="hero-divider"></div>
+    <p class="hero-tagline">스스로 판단하고 행동하는 AI 시스템</p>
+    <div class="hero-meta">
+      <div class="meta-item"><span class="meta-label">Instructor</span><span class="meta-value">Woohee (SBS아카데미)</span></div>
+      <div class="meta-item"><span class="meta-label">Date</span><span class="meta-value">2026.04</span></div>
+    </div>
+  </div>
+</section>
+<section class="section">
+<div class="section-container">
+  <div class="section-header">
+    <span class="section-badge">INTRODUCTION</span>
+    <h2 class="section-title">이 교육에서 배우는 것</h2>
+  </div>
+  <div class="content-area">
+<p>이 과정은 <strong>AI 에이전트</strong>의 기초부터 실전 활용까지를 다룹니다.</p>
+<p>단순 챗봇과 달리 AI 에이전트는 <strong>목표를 설정하고, 계획을 세우고, 도구를 활용하여 스스로 작업을 수행</strong>하는 자율 시스템입니다.</p>
+<p>4주간의 교육을 통해 여러분은: - AI 에이전트의 핵심 원리를 이해하고 - Claude Code를 활용한 실습을 경험하고 - 실제 업무에 적용 가능한 자동화 워크플로우를 설계하게 됩니다</p>
+  </div>
+</div>
+</section>
+<section class="section">
+<div class="section-container">
+  <div class="section-header">
+    <span class="section-badge">CONCEPT</span>
+    <h2 class="section-title">AI 에이전트의 4가지 핵심 능력</h2>
+  </div>
+  <div class="content-area">
+    <div class="concept-list">
+      <div class="concept-item">
+        <span class="concept-num">01</span>
+        <div>
+          <strong><strong>환경 인식(Perception)</strong></strong>
+          <p>파일 시스템, 웹 페이지, API 등 외부 데이터를 탐색하고 수집합니다</p>
+        </div>
+      </div>
+      <div class="concept-item">
+        <span class="concept-num">02</span>
+        <div>
+          <strong><strong>자율 판단(Reasoning)</strong></strong>
+          <p>수집한 정보를 분석하여 최적의 행동을 결정합니다</p>
+        </div>
+      </div>
+      <div class="concept-item">
+        <span class="concept-num">03</span>
+        <div>
+          <strong><strong>도구 활용(Tool Use)</strong></strong>
+          <p>코드 실행, 파일 편집, 터미널 명령 등 실제 작업을 수행합니다</p>
+        </div>
+      </div>
+      <div class="concept-item">
+        <span class="concept-num">04</span>
+        <div>
+          <strong><strong>반복 학습(Iteration)</strong></strong>
+          <p>결과를 확인하고 오류가 있으면 스스로 수정합니다</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<section class="section">
+<div class="section-container">
+  <div class="section-header">
+    <span class="section-badge">COMPARISON</span>
+    <h2 class="section-title">일반 AI vs AI 에이전트</h2>
+  </div>
+  <div class="split-layout">
+    <div class="split-left"><h3>일반 AI (ChatGPT 등)</h3>
+<p>질문에 답변하는 <strong>1회성 도구</strong>입니다.</p>
+<p>사용자가 매번 새로운 질문을 입력해야 하며, AI가 직접 파일을 수정하거나 코드를 실행할 수 없습니다.</p>
+<p><strong>한계</strong>: 복잡한 멀티스텝 작업 불가</p></div>
+    <div class="split-right"><h3>AI 에이전트 (Claude Code 등)</h3>
+<p><strong>목표를 설정</strong>하고 스스로 계획-실행-수정하는 자율 시스템입니다.</p>
+<p>파일 읽기/쓰기, 터미널 명령, 웹 검색 등 도구를 자유롭게 활용하여 복잡한 작업을 자동 완료합니다.</p>
+<p><strong>강점</strong>: 100단계 이상의 복잡한 작업도 자율 수행</p></div>
+  </div>
+</div>
+</section>
+<section class="section">
+<div class="section-container">
+  <div class="section-header">
+    <span class="section-badge">VS</span>
+    <h2 class="section-title">기존 개발 방식 vs 에이전트 방식</h2>
+  </div>
+  <div class="content-area">
+<div class="table-wrapper"><table>
+<thead><tr><th>구분</th><th>기존 개발</th><th>AI 에이전트</th></tr></thead>
+<tbody>
+<tr><td>코드 작성</td><td>개발자가 직접 타이핑</td><td>에이전트가 자동 생성</td></tr>
+<tr><td>디버깅</td><td>에러 메시지 → 구글링 → 수정</td><td>에러 감지 → 자동 분석 → 자동 수정</td></tr>
+<tr><td>테스트</td><td>수동 테스트 작성</td><td>자동 테스트 생성 + 실행</td></tr>
+<tr><td>배포</td><td>CI/CD 파이프라인 설정</td><td>에이전트가 설정부터 배포까지</td></tr>
+<tr><td>소요 시간</td><td>수 시간 ~ 수 일</td><td>수 분 ~ 수 시간</td></tr>
+</tbody></table></div>
+  </div>
+</div>
+</section>
+<section class="section">
+<div class="section-container">
+  <div class="section-header">
+    <span class="section-badge">IMPACT</span>
+    <h2 class="section-title">AI 에이전트 도입 효과</h2>
+  </div>
+  <div class="content-area">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number"><strong>80%</strong></div>
+        <div class="stat-label">시간 절감</div>
+        <p class="stat-desc">반복 업무 자동화로 주당 32시간 절약</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><strong>3x</strong></div>
+        <div class="stat-label">생산성 향상</div>
+        <p class="stat-desc">동일 인력으로 3배 산출물 달성</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><strong>95%</strong></div>
+        <div class="stat-label">정확도</div>
+        <p class="stat-desc">휴먼 에러를 대폭 감소시킴</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><strong>24/7</strong></div>
+        <div class="stat-label">무중단 운영</div>
+        <p class="stat-desc">야간과 주말에도 자동 처리 가능</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<section class="section hero-section section--dark">
+  <div class="insight-center">
+    <div class="insight-hero-text"><p>그래서, 우리는 어떻게 시작해야 하는가?</p></div>
+    <div class="insight-divider"></div>
+  </div>
+</section>
+<section class="section">
+<div class="section-container">
+  <div class="section-header">
+    <span class="section-badge">CURRICULUM</span>
+    <h2 class="section-title">4주 교육 로드맵</h2>
+  </div>
+  <div class="content-area">
+    <div class="curriculum-grid">
+      <div class="curr-card">
+        <div class="curr-header">
+          <span class="curr-num">01</span>
+          <div>
+            <div class="curr-title"><strong>1주차</strong></div>
+            <div class="curr-hours">에이전트 기초</div>
+          </div>
+        </div>
+        <p style="font-size:clamp(0.75rem,0.85vw,0.85rem);color:var(--muted-fg);line-height:1.5;">Claude Code 설치, 기본 사용법, 프롬프트 엔지니어링</p>
+      </div>
+      <div class="curr-card">
+        <div class="curr-header">
+          <span class="curr-num">02</span>
+          <div>
+            <div class="curr-title"><strong>2주차</strong></div>
+            <div class="curr-hours">도구 활용</div>
+          </div>
+        </div>
+        <p style="font-size:clamp(0.75rem,0.85vw,0.85rem);color:var(--muted-fg);line-height:1.5;">MCP 서버, 외부 API 연동, 파일 자동화</p>
+      </div>
+      <div class="curr-card">
+        <div class="curr-header">
+          <span class="curr-num">03</span>
+          <div>
+            <div class="curr-title"><strong>3주차</strong></div>
+            <div class="curr-hours">자동화 설계</div>
+          </div>
+        </div>
+        <p style="font-size:clamp(0.75rem,0.85vw,0.85rem);color:var(--muted-fg);line-height:1.5;">워크플로우 설계, 멀티 에이전트 구성</p>
+      </div>
+      <div class="curr-card">
+        <div class="curr-header">
+          <span class="curr-num">04</span>
+          <div>
+            <div class="curr-title"><strong>4주차</strong></div>
+            <div class="curr-hours">실전 프로젝트</div>
+          </div>
+        </div>
+        <p style="font-size:clamp(0.75rem,0.85vw,0.85rem);color:var(--muted-fg);line-height:1.5;">팀 프로젝트, 포트폴리오 완성</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<section class="section">
+<div class="section-container">
+  <div class="section-header">
+    <span class="section-badge">PROCESS</span>
+    <h2 class="section-title">에이전트 개발 5단계 프로세스</h2>
+  </div>
+  <div class="content-area">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-marker">1</div>
+        <div class="timeline-content">
+          <div class="timeline-title"><strong>요구사항 정의</strong></div>
+          <p class="timeline-desc">자동화할 업무와 목표를 명확히 설정</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker">2</div>
+        <div class="timeline-content">
+          <div class="timeline-title"><strong>도구 선택</strong></div>
+          <p class="timeline-desc">MCP 서버, API, 데이터베이스 등 필요 도구 구성</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker">3</div>
+        <div class="timeline-content">
+          <div class="timeline-title"><strong>프롬프트 설계</strong></div>
+          <p class="timeline-desc">에이전트 지시사항(CLAUDE.md) 작성</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker">4</div>
+        <div class="timeline-content">
+          <div class="timeline-title"><strong>테스트 & 튜닝</strong></div>
+          <p class="timeline-desc">반복 실행하며 품질 개선</p>
+        </div>
+      </div>
+      <div class="timeline-item timeline-item--last">
+        <div class="timeline-marker">5</div>
+        <div class="timeline-content">
+          <div class="timeline-title"><strong>배포 & 모니터링</strong></div>
+          <p class="timeline-desc">프로덕션 적용 후 지속적 관리</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<section class="section">
+<div class="section-container">
+  <div class="section-header">
+    <span class="section-badge">INSIGHT</span>
+    <h2 class="section-title">전문가의 한마디</h2>
+  </div>
+  <div class="content-area">
+    <blockquote class="slide-quote">
+      <p class="quote-text">AI 에이전트는 단순한 도구가 아닙니다. 스스로 생각하고, 계획하고, 실행하는 <strong>디지털 동료</strong>입니다. 앞으로 모든 지식 노동자는 자신만의 AI 에이전트 팀을 갖게 될 것입니다.</p>
+      <footer class="quote-attribution">
+        <span class="quote-author">Dario Amodei</span>
+        <span class="quote-source">Anthropic CEO, 2025</span>
+      </footer>
+    </blockquote>
+  </div>
+</div>
+</section>
+<section class="section">
+<div class="section-container">
+  <div class="section-header">
+    <span class="section-badge">TOOLS</span>
+    <h2 class="section-title">주요 AI 에이전트 도구 비교</h2>
+  </div>
+  <div class="content-area">
+<div class="table-wrapper"><table>
+<thead><tr><th>도구</th><th>특징</th><th>모델</th><th>장점</th></tr></thead>
+<tbody>
+<tr><td>Claude Code</td><td>CLI 기반, 자율 코딩</td><td>Claude Opus/Sonnet</td><td>파일 편집, 터미널, MCP</td></tr>
+<tr><td>Cursor</td><td>IDE 통합</td><td>GPT-4/Claude</td><td>에디터 내 자동완성</td></tr>
+<tr><td>Windsurf</td><td>풀스택 에이전트</td><td>자체 모델</td><td>프로젝트 전체 이해</td></tr>
+<tr><td>Devin</td><td>완전 자율 개발</td><td>자체 모델</td><td>독립적 개발 수행</td></tr>
+</tbody></table></div>
+  </div>
+</div>
+</section>
+<section class="section">
+<div class="section-container">
+  <div class="section-header">
+    <span class="section-badge">DEMO</span>
+    <h2 class="section-title">Claude Code 실제 동작 화면</h2>
+  </div>
+  <div class="content-area">
+    <div class="image-center">
+      <p class="image-caption">CLI에서 자연어로 지시하면 에이전트가 코드를 자동 생성합니다</p>
+      <div><p>에이전트가 파일을 읽고, 분석하고, 수정하는 전 과정이 투명하게 표시됩니다. 개발자는 결과를 확인하고 승인/거부만 하면 됩니다.</p></div>
+    </div>
+  </div>
+</div>
+</section>
+<section class="section hero-section">
+  <div class="hero-content">
+    <div class="hero-title"><span class="hero-title-main">Thank You</span></div>
+    <div class="hero-divider"></div>
+    <p class="hero-tagline">AI 에이전트와 함께하는 새로운 개발 경험</p>
+    <div class="hero-meta">
+      <div class="meta-item"><span class="meta-label">Instructor</span><span class="meta-value">woohee@sbs.ac.kr</span></div>
+    </div>
+  </div>
+</section>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.section').forEach(el => observer.observe(el));
+    });
+    </script>
+</body>
+</html>

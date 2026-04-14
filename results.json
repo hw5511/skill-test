@@ -1,6 +1,6 @@
 {
   "title": "Skill Test - AI Agent Skill Effectiveness Research",
-  "updated": "2026-04-10",
+  "updated": "2026-04-14",
   "model": "sonnet",
   "prompts": [
     {
@@ -24,6 +24,28 @@
           "files": ["index.html"]
         },
         "E-agent-web-v5": {
+          "status": "done",
+          "files": ["index.html"]
+        }
+      }
+    },
+    {
+      "id": "P2v3-lecture-dsl",
+      "title": "Lecture DSL CSS Design (build.py + sample.md -> style.css)",
+      "experiments": {
+        "A-control": {
+          "status": "done",
+          "files": ["index.html"]
+        },
+        "B-skill-basic": {
+          "status": "done",
+          "files": ["index.html"]
+        },
+        "C-skill-rules": {
+          "status": "done",
+          "files": ["index.html"]
+        },
+        "D-skill-full": {
           "status": "done",
           "files": ["index.html"]
         }
